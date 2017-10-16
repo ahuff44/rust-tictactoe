@@ -1,4 +1,4 @@
-pub mod TTT {
+pub mod ttt {
   #[derive(Debug, Clone, Copy)]
   pub enum Mark {
     X,
