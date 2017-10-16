@@ -20,8 +20,8 @@ pub mod ttt {
     dc: usize,
   }
 
-  impl SliceIter {
-    fn new<'a>(&board: Board<'a>) -> SliceIter<'a> {
+  impl<'b> SliceIter<'b> {
+    fn new<'a>(board: &'a Board) -> SliceIter<'a> {
       SliceIter{
         board,
         sr: 0, sc: 0,
@@ -66,7 +66,7 @@ pub mod ttt {
     }
   }
 
-  impl<'a> Iterator<Vec<Mark>> for SliceIter<'a> {
+  impl<'a> Iterator for SliceIter<'a> {
     fn next(&mut self) -> Option<Vec<Mark>> {
       loop {
         let has_more = self.advance();
@@ -110,7 +110,7 @@ pub mod ttt {
       }
     }
 
-    pub fn slices(&'a self) -> SliceIter<'a> {
+    pub fn slices<'a>(&'a self) -> SliceIter<'a> {
       SliceIter::new(&self)
     }
 
