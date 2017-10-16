@@ -1,5 +1,5 @@
 pub mod ttt {
-  #[derive(Debug, Clone, Copy)]
+  #[derive(Debug, Clone, Copy, PartialEq)]
   pub enum Mark {
     X,
     O,
@@ -47,20 +47,24 @@ pub mod ttt {
     pub fn winner(&self) -> Option<Mark> {
       for sr in 0..self.size {
         for sc in 0..self.size {
-          let target = self.get(sr, sc);
-          match target {
-            Mark::Empty => (),
-            Mark::X | Mark::O => {
-              for dr in -1..2 {
-                for dc in -1..2 {
-                  for dist in 0..self.size {
-                    let rr = sr + dist*dr;
-                    let cc = sc + dist*dc;
-                    if self.get(rr, cc) != target {
-                      // @TODO
-                      // ugh I don't really like this func sig anyway...
-                      // seems like this should be split into a slice iterator
-                      // and a function that tells if a slice is a winner
+          if let Some(target) = self.get(sr, sc) {
+            match target {
+              Mark::Empty => (),
+              Mark::X | Mark::O => {
+                for dr in -1..2i32 {
+                  for dc in -1..2i32 {
+                    for dist in 0..self.size {
+                      let rr = sr + dist*(dr as usize);
+                      let cc = sc + dist*(dc as usize);
+                      if let Some(val) = self.get(rr, cc) {
+                        if val != target {
+
+                        }
+                        // @TODO
+                        // ugh I don't really like this func sig anyway...
+                        // seems like this should be split into a slice iterator
+                        // and a function that tells if a slice is a winner
+                      }
                     }
                   }
                 }
@@ -69,6 +73,7 @@ pub mod ttt {
           }
         }
       }
+      None // @TODO change
     }
   }
 }
