@@ -43,5 +43,32 @@ pub mod ttt {
         None => false,
       }
     }
+
+    pub fn winner(&self) -> Option<Mark> {
+      for sr in 0..self.size {
+        for sc in 0..self.size {
+          let target = self.get(sr, sc);
+          match target {
+            Mark::Empty => (),
+            Mark::X | Mark::O => {
+              for dr in -1..2 {
+                for dc in -1..2 {
+                  for dist in 0..self.size {
+                    let rr = sr + dist*dr;
+                    let cc = sc + dist*dc;
+                    if self.get(rr, cc) != target {
+                      // @TODO
+                      // ugh I don't really like this func sig anyway...
+                      // seems like this should be split into a slice iterator
+                      // and a function that tells if a slice is a winner
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }
