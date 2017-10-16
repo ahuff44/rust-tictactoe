@@ -1,3 +1,7 @@
+extern crate tictactoe;
+
+use tictactoe::TTT;
+
 fn main() {
-    println!("Hello, world!");
+  println!("{:?}", TTT::Board::new(3));
 }
