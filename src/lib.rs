@@ -141,3 +141,32 @@ impl Board {
     None
   }
 }
+
+
+
+
+
+#[cfg(test)]
+mod tests {
+  use super::{Board, Mark};
+
+  #[test]
+  fn board_set() {
+    let mut board = Board::new(3);
+
+    board.set(0, 1, Mark::O);
+    board.set(0, 1, Mark::Empty);
+    board.set(0, 2, Mark::X);
+
+    assert_eq!(Some(Mark::Empty), board.get(0, 0));
+    assert_eq!(Some(Mark::Empty), board.get(0, 1));
+    assert_eq!(Some(Mark::X), board.get(0, 2));
+    assert_eq!(Some(Mark::Empty), board.get(1, 0));
+    assert_eq!(Some(Mark::Empty), board.get(1, 1));
+    assert_eq!(Some(Mark::Empty), board.get(1, 2));
+    assert_eq!(Some(Mark::Empty), board.get(2, 0));
+    assert_eq!(Some(Mark::Empty), board.get(2, 1));
+    assert_eq!(Some(Mark::Empty), board.get(2, 2));
+    assert_eq!(None, board.winner());
+  }
+}
