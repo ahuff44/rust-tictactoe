@@ -22,13 +22,15 @@ struct SliceIter<'a> {
 impl<'b> SliceIter<'b> {
   fn new<'a>(board: &'a Board) -> SliceIter<'a> {
     SliceIter{
-      board,
+      board: &board, // @TODO: do I need the & here or does it magically work either way?
       sr: 0, sc: 0,
       dr: 0, dc: 1,
     }
   }
 
   fn advance(&mut self) -> bool {
+    // returns: whether all possible (sr, sc, dr, dc) combos have been tried yet
+    //    (i.e. should we keep going)
     match (self.dr, self.dc) {
       (0, 1) => {self.dr = 1},
       (1, 1) => {self.dc = 0},
@@ -46,17 +48,17 @@ impl<'b> SliceIter<'b> {
           }
         }
       },
+      (_, _) => panic!("invalid (dr, dc)"),
     }
     true
   }
 
-  fn attempt_next(&mut self) -> Option<Vec<&Mark>> {
+  fn attempt_slice(&mut self) -> Option<Vec<Mark>> {
     let mut v = Vec::with_capacity(self.board.size);
     for dist in 0..self.board.size {
       let rr: i32 = (self.sr as i32) + (dist as i32)*self.dr;
       let cc: i32 = (self.sc as i32) + (dist as i32)*self.dc;
       if let Some(val) = self.board.get(rr, cc) {
-        let x: () = val;
         v.push(val);
       } else {
         return None;
@@ -67,13 +69,13 @@ impl<'b> SliceIter<'b> {
 }
 
 impl<'a> Iterator for SliceIter<'a> {
-  type Item = Vec<&Mark>;
+  type Item = Vec<Mark>;
 
-  fn next(&mut self) -> Option<Vec<&Mark>> {
+  fn next(&mut self) -> Option<Vec<Mark>> {
     loop {
       let has_more = self.advance();
       if !has_more { return None; }
-      if let Some(slice) = self.attempt_next() {
+      if let Some(slice) = self.attempt_slice() {
         return Some(slice);
       }
     }
@@ -99,11 +101,10 @@ impl Board {
     }
     let rr = rr as usize;
     let cc = cc as usize;
-    // @TODO: rm x.clone on the next line; seems like it should be implicit
     self.vals
       .get(rr)
       .and_then(|row| row.get(cc))
-      .map(|x| x.clone())
+      .map(|&val| val)
   }
 
   pub fn set(&mut self, rr: usize, cc: usize, val: Mark) -> bool {
@@ -111,13 +112,13 @@ impl Board {
     match self.vals
         .get_mut(rr)
         .and_then(|row| row.get_mut(cc))
-        .map(|x| *x = val) {
+        .map(|x| *x = val) { // @TODO `ref x`?
       Some(_) => true,
       None => false,
     }
   }
 
-  pub fn slices<'a>(&'a self) -> SliceIter<'a> {
+  fn slices(&self) -> SliceIter {
     SliceIter::new(&self)
   }
 
@@ -125,15 +126,15 @@ impl Board {
     for slice in self.slices() {
       // let x: () = slice;
       match slice.get(0) {
-        Some(target) if target != Mark::Empty => {
-          for elem in slice.iter() {
+        Some(&target) if target != Mark::Empty => {
+          for &elem in slice.iter() {
             if elem != target {
               continue;
             }
           }
-          return target;
+          return Some(target);
         },
-        Some(Mark::Empty) => { continue; },
+        Some(_) => { continue; },
         None => { continue; },
       }
     }
