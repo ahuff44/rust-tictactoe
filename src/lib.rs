@@ -22,7 +22,7 @@ struct SliceIter<'a> {
 impl<'b> SliceIter<'b> {
   fn new<'a>(board: &'a Board) -> SliceIter<'a> {
     SliceIter{
-      board: &board, // @TODO: do I need the & here or does it magically work either way?
+      board: &board, // @TODO: why is the `&` optional here?
       sr: 0, sc: 0,
       dr: 0, dc: 1,
     }
@@ -112,7 +112,7 @@ impl Board {
     match self.vals
         .get_mut(rr)
         .and_then(|row| row.get_mut(cc))
-        .map(|x| *x = val) { // @TODO `ref x`?
+        .map(|x| *x = val) {
       Some(_) => true,
       None => false,
     }
@@ -124,7 +124,6 @@ impl Board {
 
   pub fn winner(&self) -> Option<Mark> {
     for slice in self.slices() {
-      // let x: () = slice;
       match slice.get(0) {
         Some(&target) if target != Mark::Empty => {
           for &elem in slice.iter() {
