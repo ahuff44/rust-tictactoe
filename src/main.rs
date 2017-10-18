@@ -1,9 +1,7 @@
 extern crate tictactoe;
 
-use tictactoe::ttt;
-
 fn main() {
-  let mut board = ttt::Board::new(3);
-  board.set(0, 1, ttt::Mark::X);
+  let mut board = tictactoe::Board::new(3);
+  board.set(0, 1, tictactoe::Mark::X);
   println!("{:?}", board);
 }
