@@ -124,6 +124,7 @@ impl Board {
 
   pub fn winner(&self) -> Option<Mark> {
     for slice in self.slices() {
+      // let x:Option<Mark>=slice[0]; @TODO something's up...
       match slice.get(0) {
         Some(&target) if target != Mark::Empty => {
           for &elem in slice.iter() {
@@ -166,6 +167,16 @@ mod tests {
     assert_eq!(Some(Mark::Empty), board.get(2, 0));
     assert_eq!(Some(Mark::Empty), board.get(2, 1));
     assert_eq!(Some(Mark::Empty), board.get(2, 2));
+  }
+
+  #[test]
+  fn board_winner() {
+    let mut board = Board::new(3);
+
+    board.set(2, 0, Mark::O);
+    board.set(1, 1, Mark::O);
     assert_eq!(None, board.winner());
+    board.set(0, 2, Mark::O);
+    assert_eq!(Some(O), board.winner());
   }
 }
